@@ -4,10 +4,12 @@
 
 Cloudflare DNS 관리 - OpenTofu + R2 Backend
 
+zzizily.com·zetlabs.net 두 개인 도메인의 Cloudflare DNS를 OpenTofu로 선언적으로 관리한다. 상태는 R2 Backend에 저장하고, GitHub Actions가 PR plan을 검증한 뒤 main merge 시 apply를 자동 실행하는 CI 주도 체계로 운영한다. 로컬에서는 코드 편집과 fmt/validate까지만 수행한다.
+
 ## 아키텍처
 
 ```mermaid
-flowchart TB
+graph TB
     subgraph Local["로컬 개발"]
         dev["개발자"]
         env[".env 환경변수"]
@@ -43,7 +45,7 @@ flowchart TB
 ## CI/CD 파이프라인
 
 ```mermaid
-flowchart LR
+graph LR
     push["git push\nmain 브랜치"] --> fmt["tofu fmt -check"]
     fmt --> init["tofu init"]
     init --> validate["tofu validate"]
@@ -54,9 +56,9 @@ flowchart LR
 ```
 
 ```mermaid
-flowchart LR
-    trigger{"트리거"} --> push["push\nmain → domain/root/**"]
-    trigger --> pr["pull_request\ndomain/root/**"]
+graph LR
+    trigger{"트리거"} --> push["push\nmain → domain/root/**\n또는 domain/zetlabs/**"]
+    trigger --> pr["pull_request\ndomain/root/**\n또는 domain/zetlabs/**"]
     trigger --> manual["workflow_dispatch\n수동 실행"]
 ```
 
@@ -86,18 +88,14 @@ flowchart LR
 
 ## 시작하기
 
+DNS 변경은 CI가 apply한다 — 로컬 apply는 금지 (로컬 `.env`의 Cloudflare 토큰은 placeholder).
+
 ```bash
-# 1. .env 복사 후 값 입력
-cp .env.example .env
-
-# 2. OpenTofu 초기화
-source .env && cd domain/root && tofu init
-
-# 3. 변경 사항 확인
-source .env && cd domain/root && tofu plan
-
-# 4. 적용
-source .env && cd domain/root && tofu apply
+# 1. 변경: domain/<도메인>/ 내 .tf 파일 편집
+# 2. 검증 (R2 접근 자격은 .env, plan 이후는 CI Secrets 사용)
+source .env && cd domain/<도메인> && tofu init && tofu fmt -check && tofu validate -no-color
+# 3. 브랜치 push → PR 생성 → Actions가 plan을 PR 코멘트에 게시
+# 4. plan 검증 후 merge하면 main push 트리거로 tofu apply 자동 실행
 ```
 
 ## 환경 변수
@@ -106,7 +104,7 @@ source .env && cd domain/root && tofu apply
 |------|------|
 | `AWS_ACCESS_KEY_ID` | R2 접근용 Access Key |
 | `AWS_SECRET_ACCESS_KEY` | R2 접근용 Secret Key |
-| `TF_VAR_cloudflare_api_token` | Cloudflare API Token |
+| `TF_VAR_cloudflare_api_token` | Cloudflare API Token (로컬은 placeholder — 실제 apply는 CI Secrets) |
 | `TF_VAR_cloudflare_zone_id` | Cloudflare Zone ID |
 | `TF_VAR_cloudflare_domain` | 도메인 (zzizily.com) |
 
