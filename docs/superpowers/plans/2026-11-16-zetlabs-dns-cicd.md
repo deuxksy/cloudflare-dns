@@ -15,7 +15,7 @@
 - zone_id는 Secret 관리 — import 블록에서 `var.cloudflare_zone_id` 보간 사용, 평문 금지
 - import ID 형식: `<zone_id>/<record_id>` (provider v5 공식 문서, 2026-11-16 확인)
 - record ID 4개 (spec 표 참조): mx `677322034afc6a2eb093deda323ee2da`, dkim `3a4e61ccd73a6c8cac9b2880a1691e79`, google_site_verification `b462219707d8933c193a4ad16b527982`, spf `926d1ed3e0110e5e90859fb902ea9813`
-- zone_id 실제 값 `691ceca457f17b055c015aae77c1a6bc`는 GitHub Secret 등록 시에만 사용, 코드/커밋 메시지에 평문 금지
+- zone_id는 비민감 식별자 — GitHub Secret 등록·문서 기재를 허용한다 (2026-11-16 개정: import ID에 sensitive variable을 쓸 수 없는 OpenTofu 제약으로 `sensitive` 제거, 노출 수용). 실제 비밀은 API 토큰뿐이며 토큰은 어떤 형태로도 커밋 금지
 - `domain/root/` 코드 구조 무변경 (record-ddns.tf 마스킹 커밋은 예외로 spec에 명시됨)
 - 커밋 메시지: Conventional Commits, 말머리 영어 + 본문 한국어
 

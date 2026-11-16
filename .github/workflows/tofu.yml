@@ -14,7 +14,9 @@ on:
 
 concurrency:
   group: tofu-${{ github.ref }}
-  cancel-in-progress: true
+  # main push의 apply는 취소하지 않음 — R2 backend에 state lock이 없어
+  # 취소/신규 run 경합 시 state 손상 위험. 취소는 PR 검증 run에만 허용.
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   tofu:

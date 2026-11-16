@@ -44,7 +44,7 @@ import 블록을 PR로 올려 CI가 검증하고, merge로 CI가 적용한다.
 
 - `domain/zetlabs/record-mail.tf`에 `import` 블록 4개 추가
 - import ID 형식: `<zone_id>/<record_id>` — provider v5 공식 문서 확인 (2026-11-16, v5.19.1 docs)
-- zone_id는 Secret 관리 대상이므로 import 블록에서 `var.cloudflare_zone_id` 보간으로 참조 (평문 노출 없음). record ID는 DNS 식별자로 비민감 — 코드 평문 불가피
+- zone_id는 import 블록에서 `var.cloudflare_zone_id` 보간으로 참조. 단 OpenTofu 제약상 import ID에 sensitive variable을 쓸 수 없어 zone_id variable의 `sensitive`는 제거했다 — zone_id 자체는 비민감 식별자로 plan/로그 노출을 수용하고, 실제 비밀은 API 토큰만 관리한다 (2026-11-16 Ruling)
 - import 블록은 apply 후에도 유지 (재적용 안전, 선언적)
 - workflow, README는 이미 수정 완료 상태로 무변경
 
@@ -77,7 +77,10 @@ import 시 코드-실제 값 불일치(TTL 등)가 plan에 표시되면 코드�
 
 - CI plan 실패: PR 코멘트로 원인 노출 → 브랜치에서 수정 (plan은 continue-on-error)
 - import apply 실패: CI 중단. record ID는 검증 완료라 실패 확률 낮음
-- 롤백: import 블록/리소스 제거 revert — destroy 트리거 없음, 기존 DNS 레코드는 삭제되지 않음
+- **롤백 주의 — revert는 destroy를 트리거한다**: merge 후 5개 리소스가 state에 편입된 시점부터, import 블록/리소스 블록을 제거하는 revert의 plan은 "5 to destroy"가 되고 main push 자동 apply가 MX/SPF/DKIM/인증 TXT/_dmarc를 실제 삭제한다 (메일 전면 장애). 안전한 되돌리기 경로는:
+  1. 문제 리소스만 forward-fix로 수정 (권장)
+  2. state에서만 제거: `removed { to = ..., destroy = false }` 블록
+  3. 비상시 `tofu state rm <주소>` — CI가 다음 apply에서 리소스를 재생성하므로 코드도 함께 제거해야 한다
 
 ## 범위 밖
 
