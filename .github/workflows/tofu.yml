@@ -82,7 +82,7 @@ jobs:
         run: exit 1
 
       - name: tofu apply
-        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
         run: tofu apply -auto-approve
 
   tofu-zetlabs:
@@ -150,5 +150,5 @@ jobs:
         run: exit 1
 
       - name: tofu apply
-        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
         run: tofu apply -auto-approve
