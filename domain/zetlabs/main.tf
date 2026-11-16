@@ -33,7 +33,6 @@ provider "cloudflare" {
 variable "cloudflare_zone_id" {
   description = "Zone ID"
   type        = string
-  sensitive   = true
 }
 
 variable "cloudflare_api_token" {
