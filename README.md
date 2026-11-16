@@ -65,16 +65,21 @@ flowchart LR
 ```
 ├── .github/workflows/
 │   └── tofu.yml              # CI/CD 워크플로우
-├── domain/root/
-│   ├── main.tf               # Backend + Provider + Variables (통합)
-│   ├── page-rule.tf          # Page Rule (zzizily.com → GitHub 301)
-│   ├── record-a.tf           # A 레코드 (local, ddns-netgear)
-│   ├── record-cname.tf       # CNAME 레코드 (tech → GitHub Pages)
-│   ├── record-ddns.tf        # DDNS 레코드 (Netgear 공유기)
-│   ├── record-google.tf      # Google 서비스 (blog, mail, drive 등)
-│   ├── record-mail.tf        # MX 레코드 (Google Workspace)
-│   ├── record-ns.tf          # NS 레코드 (netgear 서브도메인)
-│   └── record-ssl.tf         # SSL 인증 (ACME challenge)
+├── domain/
+│   ├── root/                 # zzizily.com
+│   │   ├── main.tf           # Backend + Provider + Variables (통합)
+│   │   ├── page-rule.tf      # Page Rule (zzizily.com → GitHub 301)
+│   │   ├── record-a.tf       # A 레코드 (local, ddns-netgear)
+│   │   ├── record-cname.tf   # CNAME 레코드 (tech → GitHub Pages)
+│   │   ├── record-ddns.tf    # DDNS 레코드 (Netgear 공유기 — 실제 IP는 repo 미보관, API로 갱신)
+│   │   ├── record-google.tf  # Google 서비스 (blog, mail, drive 등)
+│   │   ├── record-mail.tf    # MX 레코드 (Google Workspace)
+│   │   ├── record-ns.tf      # NS 레코드 (netgear 서브도메인)
+│   │   ├── record-openai.tf  # OpenAI 도메인 인증 TXT
+│   │   └── record-ssl.tf     # SSL 인증 (ACME challenge)
+│   └── zetlabs/              # zetlabs.net
+│       ├── main.tf           # Backend + Provider + Variables
+│       └── record-mail.tf    # MX, SPF, DKIM, DMARC, Google 인증 (Google Workspace)
 ├── .env.example              # 환경 변수 템플릿
 └── docs/                     # 설계 문서
 ```
@@ -112,6 +117,7 @@ source .env && cd domain/root && tofu apply
 | `AWS_ACCESS_KEY_ID` | R2 Backend 접근용 |
 | `AWS_SECRET_ACCESS_KEY` | R2 Backend 접근용 |
 | `CLOUDFLARE_API_TOKEN` | Cloudflare API Token |
-| `CLOUDFLARE_ZONE_ID` | Cloudflare Zone ID |
+| `CLOUDFLARE_ZONE_ID` | Cloudflare Zone ID (zzizily.com) |
+| `CLOUDFLARE_ZONE_ID_ZETLABS` | Cloudflare Zone ID (zetlabs.net) |
 | `CLOUDFLARE_DOMAIN` | 도메인 |
 | `CLOUDFLARE_ACCOUNT_ID` | Cloudflare Account ID |

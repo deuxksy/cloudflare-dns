@@ -27,3 +27,6 @@ override.tf.json
 
 # OMC
 .omc/
+
+# Serena MCP cache
+.serena/
