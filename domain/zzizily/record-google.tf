@@ -43,15 +43,6 @@ resource "cloudflare_dns_record" "dkim" {
   proxied = false
 }
 
-resource "cloudflare_dns_record" "test" {
-  zone_id = var.cloudflare_zone_id
-  name    = "test.${var.cloudflare_domain}"
-  content = "ghs.googlehosted.com"
-  type    = "CNAME"
-  ttl     = 1
-  proxied = true
-}
-
 resource "cloudflare_dns_record" "www" {
   zone_id = var.cloudflare_zone_id
   name    = "www.${var.cloudflare_domain}"
