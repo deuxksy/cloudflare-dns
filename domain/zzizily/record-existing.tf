@@ -65,24 +65,6 @@ import {
   id = "${nonsensitive(var.cloudflare_zone_id)}/b46bc47e284b5743e095b197cca93214"
 }
 
-resource "cloudflare_dns_record" "existing_f0f15d57a215" {
-  zone_id = var.cloudflare_zone_id
-  type    = "CNAME"
-  name    = "uptime.zzizily.com"
-  content = "placeholder.invalid"
-  ttl     = 1
-  proxied = true
-
-  lifecycle {
-    ignore_changes = [content]
-  }
-}
-
-import {
-  to = cloudflare_dns_record.existing_f0f15d57a215
-  id = "${nonsensitive(var.cloudflare_zone_id)}/f0f15d57a215a16d5411783b4fce227b"
-}
-
 resource "cloudflare_dns_record" "existing_9ec8a2ecb3a1" {
   zone_id = var.cloudflare_zone_id
   type    = "TXT"
