@@ -83,24 +83,6 @@ import {
   id = "${nonsensitive(var.cloudflare_zone_id)}/b46bc47e284b5743e095b197cca93214"
 }
 
-resource "cloudflare_dns_record" "existing_f9976933493e" {
-  zone_id = var.cloudflare_zone_id
-  type    = "CNAME"
-  name    = "tlog.zzizily.com"
-  content = "placeholder.invalid"
-  ttl     = 1
-  proxied = true
-
-  lifecycle {
-    ignore_changes = [content]
-  }
-}
-
-import {
-  to = cloudflare_dns_record.existing_f9976933493e
-  id = "${nonsensitive(var.cloudflare_zone_id)}/f9976933493e2a5e583dbaf48e979daa"
-}
-
 resource "cloudflare_dns_record" "existing_f0f15d57a215" {
   zone_id = var.cloudflare_zone_id
   type    = "CNAME"
