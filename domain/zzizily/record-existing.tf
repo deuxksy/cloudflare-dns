@@ -1,21 +1,3 @@
-resource "cloudflare_dns_record" "existing_2605f068eafb" {
-  zone_id = var.cloudflare_zone_id
-  type    = "A"
-  name    = "ddns-linksys.zzizily.com"
-  content = "192.0.2.1"
-  ttl     = 1
-  proxied = false
-
-  lifecycle {
-    ignore_changes = [content]
-  }
-}
-
-import {
-  to = cloudflare_dns_record.existing_2605f068eafb
-  id = "${nonsensitive(var.cloudflare_zone_id)}/2605f068eafbb5a30e5dbd2934e50153"
-}
-
 resource "cloudflare_dns_record" "existing_d5880b55c778" {
   zone_id = var.cloudflare_zone_id
   type    = "A"
@@ -99,24 +81,6 @@ resource "cloudflare_dns_record" "existing_b46bc47e284b" {
 import {
   to = cloudflare_dns_record.existing_b46bc47e284b
   id = "${nonsensitive(var.cloudflare_zone_id)}/b46bc47e284b5743e095b197cca93214"
-}
-
-resource "cloudflare_dns_record" "existing_f9976933493e" {
-  zone_id = var.cloudflare_zone_id
-  type    = "CNAME"
-  name    = "tlog.zzizily.com"
-  content = "placeholder.invalid"
-  ttl     = 1
-  proxied = true
-
-  lifecycle {
-    ignore_changes = [content]
-  }
-}
-
-import {
-  to = cloudflare_dns_record.existing_f9976933493e
-  id = "${nonsensitive(var.cloudflare_zone_id)}/f9976933493e2a5e583dbaf48e979daa"
 }
 
 resource "cloudflare_dns_record" "existing_f0f15d57a215" {

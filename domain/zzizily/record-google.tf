@@ -34,15 +34,6 @@ resource "cloudflare_dns_record" "drive" {
   proxied = true
 }
 
-resource "cloudflare_dns_record" "mail" {
-  zone_id = var.cloudflare_zone_id
-  name    = "mail.${var.cloudflare_domain}"
-  content = "ghs.googlehosted.com"
-  type    = "CNAME"
-  ttl     = 1
-  proxied = true
-}
-
 resource "cloudflare_dns_record" "dkim" {
   zone_id = var.cloudflare_zone_id
   name    = "google._domainkey.${var.cloudflare_domain}"
@@ -50,24 +41,6 @@ resource "cloudflare_dns_record" "dkim" {
   type    = "TXT"
   ttl     = 3600
   proxied = false
-}
-
-resource "cloudflare_dns_record" "sites" {
-  zone_id = var.cloudflare_zone_id
-  name    = "sites.${var.cloudflare_domain}"
-  content = "ghs.googlehosted.com"
-  type    = "CNAME"
-  ttl     = 1
-  proxied = true
-}
-
-resource "cloudflare_dns_record" "test" {
-  zone_id = var.cloudflare_zone_id
-  name    = "test.${var.cloudflare_domain}"
-  content = "ghs.googlehosted.com"
-  type    = "CNAME"
-  ttl     = 1
-  proxied = true
 }
 
 resource "cloudflare_dns_record" "www" {
