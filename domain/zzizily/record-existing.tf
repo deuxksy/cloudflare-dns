@@ -1,21 +1,3 @@
-resource "cloudflare_dns_record" "existing_2605f068eafb" {
-  zone_id = var.cloudflare_zone_id
-  type    = "A"
-  name    = "ddns-linksys.zzizily.com"
-  content = "192.0.2.1"
-  ttl     = 1
-  proxied = false
-
-  lifecycle {
-    ignore_changes = [content]
-  }
-}
-
-import {
-  to = cloudflare_dns_record.existing_2605f068eafb
-  id = "${nonsensitive(var.cloudflare_zone_id)}/2605f068eafbb5a30e5dbd2934e50153"
-}
-
 resource "cloudflare_dns_record" "existing_d5880b55c778" {
   zone_id = var.cloudflare_zone_id
   type    = "A"

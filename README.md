@@ -70,9 +70,8 @@ graph LR
 │   ├── zzizily/              # zzizily.com
 │   │   ├── main.tf           # Backend + Provider + Variables (통합)
 │   │   ├── page-rule.tf      # Page Rule (zzizily.com → GitHub 301)
-│   │   ├── record-a.tf       # A 레코드 (local, ddns-netgear)
+│   │   ├── record-a.tf       # A 레코드 (local)
 │   │   ├── record-cname.tf   # CNAME 레코드 (tech → GitHub Pages)
-│   │   ├── record-ddns.tf    # DDNS 레코드 (Netgear 공유기 — 실제 IP는 repo 미보관, API로 갱신)
 │   │   ├── record-google.tf  # Google 서비스 (blog, mail, drive 등)
 │   │   ├── record-mail.tf    # MX 레코드 (Google Workspace)
 │   │   ├── record-openai.tf  # OpenAI 도메인 인증 TXT
