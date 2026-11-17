@@ -75,7 +75,6 @@ graph LR
 │   │   ├── record-ddns.tf    # DDNS 레코드 (Netgear 공유기 — 실제 IP는 repo 미보관, API로 갱신)
 │   │   ├── record-google.tf  # Google 서비스 (blog, mail, drive 등)
 │   │   ├── record-mail.tf    # MX 레코드 (Google Workspace)
-│   │   ├── record-ns.tf      # NS 레코드 (netgear 서브도메인)
 │   │   ├── record-openai.tf  # OpenAI 도메인 인증 TXT
 │   │   └── record-ssl.tf     # SSL 인증 (ACME challenge)
 │   └── zetlabs/              # zetlabs.net
