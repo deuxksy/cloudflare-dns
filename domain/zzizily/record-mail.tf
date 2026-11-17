@@ -63,10 +63,10 @@ resource "cloudflare_dns_record" "icloud_mx02" {
 
 import {
   to = cloudflare_dns_record.icloud_mx01
-  id = "${var.cloudflare_zone_id}/84b97908ab190b9d8199ef7f54005ed8"
+  id = "${nonsensitive(var.cloudflare_zone_id)}/84b97908ab190b9d8199ef7f54005ed8"
 }
 
 import {
   to = cloudflare_dns_record.icloud_mx02
-  id = "${var.cloudflare_zone_id}/5c08377d054087684835d005dd7b92eb"
+  id = "${nonsensitive(var.cloudflare_zone_id)}/5c08377d054087684835d005dd7b92eb"
 }
