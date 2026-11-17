@@ -1,6 +1,6 @@
-# zzizily.com
+# cloudflare-dns
 
-[![OpenTofu](https://github.com/deuxksy/cloudflare-domain-zzizily/actions/workflows/tofu.yml/badge.svg?branch=main)](https://github.com/deuxksy/cloudflare-domain-zzizily/actions/workflows/tofu.yml)
+[![OpenTofu](https://github.com/deuxksy/cloudflare-dns/actions/workflows/tofu.yml/badge.svg?branch=main)](https://github.com/deuxksy/cloudflare-dns/actions/workflows/tofu.yml)
 
 Cloudflare DNS 관리 - OpenTofu + R2 Backend
 
@@ -19,7 +19,7 @@ graph TB
     end
 
     subgraph GitHub["GitHub"]
-        repo["Repository\ncloudflare-domain-zzizily"]
+        repo["Repository\ncloudflare-dns"]
         action["GitHub Actions\nOpenTofu Workflow"]
         secrets["Repository Secrets"]
         repo --> action
@@ -37,7 +37,6 @@ graph TB
     action -->|"tofu init\n(state 로드)"| r2
     action -->|"tofu apply"| api
     tofu -->|"tofu init"| r2
-    tofu -->|"tofu apply"| api
     api --> dns
     api --> pr
 ```
@@ -57,8 +56,8 @@ graph LR
 
 ```mermaid
 graph LR
-    trigger{"트리거"} --> push["push\nmain → domain/root/**\n또는 domain/zetlabs/**"]
-    trigger --> pr["pull_request\ndomain/root/**\n또는 domain/zetlabs/**"]
+    trigger{"트리거"} --> push["push\nmain → domain/zzizily/**\n또는 domain/zetlabs/**"]
+    trigger --> pr["pull_request\ndomain/zzizily/**\n또는 domain/zetlabs/**"]
     trigger --> manual["workflow_dispatch\n수동 실행"]
 ```
 
@@ -68,7 +67,7 @@ graph LR
 ├── .github/workflows/
 │   └── tofu.yml              # CI/CD 워크플로우
 ├── domain/
-│   ├── root/                 # zzizily.com
+│   ├── zzizily/              # zzizily.com
 │   │   ├── main.tf           # Backend + Provider + Variables (통합)
 │   │   ├── page-rule.tf      # Page Rule (zzizily.com → GitHub 301)
 │   │   ├── record-a.tf       # A 레코드 (local, ddns-netgear)

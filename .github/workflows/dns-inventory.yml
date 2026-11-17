@@ -1,0 +1,41 @@
+name: DNS inventory
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  inventory:
+    runs-on: ubuntu-latest
+    steps:
+      - name: List Cloudflare DNS records
+        env:
+          CF_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CF_ZONE_ID: ${{ secrets.CLOUDFLARE_ZONE_ID }}
+        run: |
+          python3 - <<'PY'
+          import json
+          import os
+          import urllib.parse
+          import urllib.request
+
+          page = 1
+          while True:
+              query = urllib.parse.urlencode({"page": page, "per_page": 100})
+              url = f'https://api.cloudflare.com/client/v4/zones/{os.environ["CF_ZONE_ID"]}/dns_records?{query}'
+              request = urllib.request.Request(url, headers={"Authorization": f'Bearer {os.environ["CF_API_TOKEN"]}'})
+              with urllib.request.urlopen(request) as response:
+                  data = json.load(response)
+              if not data.get("success"):
+                  raise RuntimeError("Cloudflare DNS 조회 실패")
+              for record in data["result"]:
+                  result = {key: record.get(key) for key in ("id", "type", "name")}
+                  if record["type"] == "MX":
+                      result.update({key: record.get(key) for key in ("content", "priority")})
+                  print(json.dumps(result, ensure_ascii=False))
+              if page >= data["result_info"]["total_pages"]:
+                  break
+              page += 1
+          PY
