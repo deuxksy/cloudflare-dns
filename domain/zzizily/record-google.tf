@@ -16,24 +16,6 @@ resource "cloudflare_dns_record" "blog" {
   proxied = true
 }
 
-resource "cloudflare_dns_record" "calendar" {
-  zone_id = var.cloudflare_zone_id
-  name    = "calendar.${var.cloudflare_domain}"
-  content = "ghs.googlehosted.com"
-  type    = "CNAME"
-  ttl     = 1
-  proxied = true
-}
-
-resource "cloudflare_dns_record" "drive" {
-  zone_id = var.cloudflare_zone_id
-  name    = "drive.${var.cloudflare_domain}"
-  content = "ghs.googlehosted.com"
-  type    = "CNAME"
-  ttl     = 1
-  proxied = true
-}
-
 resource "cloudflare_dns_record" "dkim" {
   zone_id = var.cloudflare_zone_id
   name    = "google._domainkey.${var.cloudflare_domain}"
