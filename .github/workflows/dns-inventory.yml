@@ -32,7 +32,7 @@ jobs:
                   raise RuntimeError("Cloudflare DNS 조회 실패")
               for record in data["result"]:
                   result = {key: record.get(key) for key in ("id", "type", "name")}
-                  if record["type"] == "MX":
+                  if record["type"] in ("MX", "NS"):
                       result.update({key: record.get(key) for key in ("content", "priority")})
                   print(json.dumps(result, ensure_ascii=False))
               if page >= data["result_info"]["total_pages"]:
