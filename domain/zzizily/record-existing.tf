@@ -1,21 +1,3 @@
-resource "cloudflare_dns_record" "existing_d5880b55c778" {
-  zone_id = var.cloudflare_zone_id
-  type    = "A"
-  name    = "nlog.zzizily.com"
-  content = "192.0.2.1"
-  ttl     = 1
-  proxied = true
-
-  lifecycle {
-    ignore_changes = [content]
-  }
-}
-
-import {
-  to = cloudflare_dns_record.existing_d5880b55c778
-  id = "${nonsensitive(var.cloudflare_zone_id)}/d5880b55c778b896ead1e9642f976b3a"
-}
-
 resource "cloudflare_dns_record" "existing_82e0db48bced" {
   zone_id = var.cloudflare_zone_id
   type    = "CNAME"
