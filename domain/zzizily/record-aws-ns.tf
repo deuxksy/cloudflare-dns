@@ -3,7 +3,7 @@ resource "cloudflare_dns_record" "ns_forti1" {
   type    = "NS"
   name    = "forti.zzizily.com"
   content = "ns-1869.awsdns-41.co.uk"
-  ttl     = 3600
+  ttl     = 1
 }
 
 import {
@@ -16,7 +16,7 @@ resource "cloudflare_dns_record" "ns_forti2" {
   type    = "NS"
   name    = "forti.zzizily.com"
   content = "ns-1460.awsdns-54.org"
-  ttl     = 3600
+  ttl     = 1
 }
 
 import {
@@ -29,7 +29,7 @@ resource "cloudflare_dns_record" "ns_forti3" {
   type    = "NS"
   name    = "forti.zzizily.com"
   content = "ns-852.awsdns-42.net"
-  ttl     = 3600
+  ttl     = 1
 }
 
 import {
@@ -42,7 +42,7 @@ resource "cloudflare_dns_record" "ns_forti4" {
   type    = "NS"
   name    = "forti.zzizily.com"
   content = "ns-110.awsdns-13.com"
-  ttl     = 3600
+  ttl     = 1
 }
 
 import {
@@ -55,7 +55,7 @@ resource "cloudflare_dns_record" "ns_linksys1" {
   type    = "NS"
   name    = "linksys.zzizily.com"
   content = "ns-1831.awsdns-36.co.uk"
-  ttl     = 3600
+  ttl     = 1
 }
 
 import {
@@ -68,7 +68,7 @@ resource "cloudflare_dns_record" "ns_linksys2" {
   type    = "NS"
   name    = "linksys.zzizily.com"
   content = "ns-1147.awsdns-15.org"
-  ttl     = 3600
+  ttl     = 1
 }
 
 import {
@@ -81,7 +81,7 @@ resource "cloudflare_dns_record" "ns_linksys3" {
   type    = "NS"
   name    = "linksys.zzizily.com"
   content = "ns-35.awsdns-04.com"
-  ttl     = 3600
+  ttl     = 1
 }
 
 import {
@@ -94,7 +94,7 @@ resource "cloudflare_dns_record" "ns_linksys4" {
   type    = "NS"
   name    = "linksys.zzizily.com"
   content = "ns-694.awsdns-22.net"
-  ttl     = 3600
+  ttl     = 1
 }
 
 import {
