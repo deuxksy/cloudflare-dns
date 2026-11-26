@@ -1,11 +1,11 @@
 terraform {
   # OpenTofu managed
-  required_version = ">= 1.8.0"
+  required_version = ">= 1.13.0"
 
   required_providers {
     cloudflare = {
       source  = "cloudflare/cloudflare"
-      version = "~> 5.0"
+      version = "~> 5.29"
     }
   }
 
@@ -33,6 +33,7 @@ provider "cloudflare" {
 variable "cloudflare_zone_id" {
   description = "Zone ID"
   type        = string
+  default     = "691ceca457f17b055c015aae77c1a6bc"
 }
 
 variable "cloudflare_api_token" {

@@ -33,15 +33,15 @@ resource "cloudflare_ruleset" "waf_ratelimit" {
   rules = [
     {
       ref         = "ratelimit_non_static"
-      action      = "managed_challenge"
-      description = "Challenge excessive non-static requests per IP"
+      action      = "block"
+      description = "Block excessive non-static requests per IP"
       enabled     = true
       expression  = "not cf.bot_management.verified_bot and not starts_with(http.request.uri.path, \"/.well-known/\") and not (ends_with(http.request.uri.path, \".css\") or ends_with(http.request.uri.path, \".js\") or ends_with(http.request.uri.path, \".png\") or ends_with(http.request.uri.path, \".jpg\") or ends_with(http.request.uri.path, \".jpeg\") or ends_with(http.request.uri.path, \".gif\") or ends_with(http.request.uri.path, \".svg\") or ends_with(http.request.uri.path, \".ico\") or ends_with(http.request.uri.path, \".webp\") or ends_with(http.request.uri.path, \".woff\") or ends_with(http.request.uri.path, \".woff2\"))"
       ratelimit = {
         characteristics     = ["cf.colo.id", "ip.src"]
         period              = 10
         requests_per_period = 100
-        mitigation_timeout  = 0
+        mitigation_timeout  = 10
       }
     }
   ]
