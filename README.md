@@ -6,14 +6,19 @@
 
 ## 시작하기
 
-로컬 `tofu apply`는 금지하며, 변경은 항상 **PR → plan 검증 → main merge**로 적용합니다.
+로컬 도구(`opentofu`, `sops`, `age`), `.env` 자동 로드, 검증·암복호화 명령은 모두 [mise.toml](./mise.toml)로 관리합니다. 로컬 `tofu apply`는 금지하며, 변경은 항상 **PR → plan 검증 → main merge**로 적용합니다.
 
 ```bash
-# 1. 도구 설치 및 복호화 (최초 1회)
-mise install && mise run decrypt
-# 2. domain/<zzizily|zetlabs>/ 내 .tf 파일 편집 후 로컬 검증
+# 1. 최초 1회: mise 신뢰 · 고정 버전 도구 설치 · .env 복호화
+mise trust && mise install && mise run decrypt
+
+# 2. domain/<zzizily|zetlabs>/ 내 .tf 파일 편집 후 로컬 검증 (.env 자동 로드)
 mise run validate && mise run plan
-# 3. PR 생성 → CI plan 확인 → main merge (자동 apply)
+
+# 3. (.env 변경 시) 암호화 백업 갱신
+mise run encrypt
+
+# 4. PR 생성 → CI plan 확인 → main merge (자동 apply)
 ```
 
 ## 관리 도메인
