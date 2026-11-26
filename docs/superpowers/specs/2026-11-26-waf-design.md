@@ -16,9 +16,9 @@
   - 로컬 `tofu apply` 실행 (`.ai/RULES.md` 준수).
 
 ## 3. 제약사항
-- **Free 플랜 한도**: Custom Rules 최대 5개, Rate Limiting 최대 1개 (`period = 10`, `mitigation_timeout = 10`, `characteristics = ["cf.colo.id", "ip.src"]`).
+- **Free 플랜 한도**: Custom Rules 최대 5개, Rate Limiting 최대 1개 (`period = 10`, `characteristics = ["cf.colo.id", "ip.src"]`, `managed_challenge` 사용 시 Free/Pro에서는 `mitigation_timeout = 0` 필수).
 - **기존 리소스 호환**: `zzizily.com`의 기존 Managed WAF(`http_request_firewall_managed`)와 phase가 분리되어 충돌하지 않는다.
-- **CI 토큰 권한**: GitHub Secrets의 `CLOUDFLARE_API_TOKEN`에 Zone WAF(Rulesets) 편집 권한이 필요하다. PR `tofu plan` 시 403이 발생하면 토큰에 `Zone WAF: Edit` 권한을 추가한다.
+- **CI 토큰 권한**: GitHub Secrets의 `CLOUDFLARE_API_TOKEN`에 Zone WAF(Rulesets) 편집 권한(`Zone > Zone WAF > Edit`)이 필요하다. 신규 ruleset 추가 시 PR `tofu plan`은 로컬에서 `2 to add`만 계산하므로, 권한이 부족하면 `main` merge 후 `tofu apply` 단계에서 403이 발생할 수 있어 사전 확인이 필요하다.
 
 ## 4. 검토한 접근법
 - **방식 A — 경량 필수 방어 (선택)**
@@ -38,7 +38,8 @@
      - `not cf.client.bot` 이면서 `User-Agent`가 비어 있거나 `http.request.version eq "HTTP/1.0"`인 요청에 챌린지 적용.
 
 2. **Rate Limiting (`phase = "http_ratelimit"`, `kind = "zone"`)**
-   - 정적 에셋 확장자(`.css`, `.js`, `.png`, `.jpg`, `.jpeg`, `.gif`, `.svg`, `.ico`, `.webp`, `.woff`, `.woff2`)를 제외한 요청에 대해, `cf.colo.id` + `ip.src` 기준으로 **10초당 100회 초과 시 10초간 `managed_challenge`** 적용.
+   - `not cf.bot_management.verified_bot` 및 `not starts_with(http.request.uri.path, "/.well-known/")` 조건과 함께 정적 에셋 확장자(`.css`, `.js`, `.png`, `.jpg`, `.jpeg`, `.gif`, `.svg`, `.ico`, `.webp`, `.woff`, `.woff2`)를 `ends_with`로 제외한 요청에 대해, `cf.colo.id` + `ip.src` 기준으로 **10초당 100회 초과 시 `managed_challenge` (`mitigation_timeout = 0`)** 적용.
+   - 모든 규칙에 안정적인 `ref` 식별자를 부여한다.
 
 ## 6. 검증 기준
 - 두 도메인 각각 `tofu fmt -check && tofu validate -no-color` 통과.
