@@ -25,8 +25,8 @@ mise run encrypt
 
 | 도메인 | 경로 | 관리 리소스 |
 |---|---|---|
-| `zzizily.com` | `domain/zzizily/` | DNS, Free 호환 WAF, Redirect Rule (`@` → `www`) |
-| `zetlabs.net` | `domain/zetlabs/` | DNS, Free 호환 WAF |
+| `zzizily.com` | `domain/zzizily/` | DNS, Free 호환 WAF, Redirect Rule (`www`, `blog` → `@`) |
+| `zetlabs.net` | `domain/zetlabs/` | DNS, Free 호환 WAF, Redirect Rule (`www` → `@`) |
 
 ## 환경 변수 · GitHub Secrets
 
