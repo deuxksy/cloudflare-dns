@@ -1,3 +1,13 @@
+# GitHub Pages — zzizily.com apex (blog.zzizily.com)
+resource "cloudflare_dns_record" "apex" {
+  zone_id = var.cloudflare_zone_id
+  type    = "CNAME"
+  name    = var.cloudflare_domain
+  content = "deuxksy.github.io"
+  ttl     = 1
+  proxied = true
+}
+
 resource "cloudflare_dns_record" "tech" {
   zone_id = var.cloudflare_zone_id
   type    = "CNAME"
