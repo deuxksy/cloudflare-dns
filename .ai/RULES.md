@@ -8,8 +8,8 @@
 
 ## Apply 주체는 CI
 
-- DNS 변경은 PR → plan 코멘트 검증 → merge (자동 apply). 로컬 apply 금지
-- 로컬 `.env`의 Cloudflare 토큰은 placeholder로 무효 — CI가 GitHub Secrets으로 apply
+- 변경(DNS/WAF/Redirect)은 PR → plan 코멘트 검증 → merge (자동 apply). 로컬 apply 금지
+- 로컬 `.env`는 `tofu init`/`plan` 검증용 — 실제 apply는 CI가 GitHub Secrets으로 수행
 - `workflow_dispatch`로 main 수동 재실행 가능 (멱등성 확인용)
 
 ## 되돌림 — revert 금지
@@ -22,8 +22,11 @@
 - TXT content는 Cloudflare API 정규화 값(따옴표 포함, 255자 초과 시 `"chunk1" "chunk2"` 분리)과 byte 일치해야 멱등
 - import ID에 sensitive variable 사용 불가 — `cloudflare_zone_id`는 `sensitive = true` 없이 선언
 - import 블록은 영구 유지 (재적용 안전)
+- Account API Token은 구형 `cloudflare_page_rule` 미지원(`code 1011`) — 리다이렉트는 신형 `cloudflare_ruleset` (`http_request_dynamic_redirect`) 사용
+- Free/Pro `http_ratelimit`은 `managed_challenge` 불가 — `action = "block"`, `period = 10`, `mitigation_timeout = 10`, `characteristics = ["cf.colo.id", "ip.src"]` 사용
 
 ## 시크릿
 
-- 비밀은 API 토큰뿐 — sops(`.env.sops`)로 보관, 어떤 형태로도 커밋 금지
+- 비밀은 `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `CLOUDFLARE_API_TOKEN` 3개뿐 — 평문(`.env`) 커밋 금지
+- `.env.sops` 갱신 시 반드시 `sops --input-type binary --output-type json -e .env > .env.sops` 사용 (기본 `dotenv` 포맷 금지)
 - zone_id·record ID는 비민감 식별자 — 코드·문서 평문 허용

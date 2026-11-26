@@ -2,9 +2,19 @@
 
 [![OpenTofu](https://github.com/deuxksy/cloudflare-dns/actions/workflows/tofu.yml/badge.svg?branch=main)](https://github.com/deuxksy/cloudflare-dns/actions/workflows/tofu.yml)
 
-Cloudflare DNS 관리 - OpenTofu + R2 Backend
+Cloudflare DNS · WAF · Redirect 관리 - OpenTofu + R2 Backend
 
-zzizily.com·zetlabs.net 두 개인 도메인의 Cloudflare DNS를 OpenTofu로 선언적으로 관리한다. 상태는 R2 Backend에 저장하고, GitHub Actions가 PR plan을 검증한 뒤 main merge 시 apply를 자동 실행하는 CI 주도 체계로 운영한다. 로컬에서는 코드 편집과 fmt/validate까지만 수행한다.
+`zzizily.com`·`zetlabs.net` 두 개인 도메인의 Cloudflare DNS, Free 호환 WAF(Custom Rules · Rate Limiting), Redirect Rule을 OpenTofu와 R2 Backend로 선언적 관리하는 IaC 저장소입니다. GitHub Actions가 PR에서 `tofu plan`을 검증하고 `main` 병합 시 자동 `apply`하는 CI 주도 체계로 운영하며, 로컬에서는 코드 편집과 `fmt`/`validate`/`plan` 검증을 수행합니다.
+
+## 문서 안내 (Diátaxis)
+
+- **Tutorials (시작하기)**: [빠른 시작](#시작하기) - 로컬 검증부터 PR 기반 CI 배포까지의 기본 흐름
+- **How-To Guides (작업 절차)**: [CI/CD 파이프라인](#cicd-파이프라인) - PR plan 검증, merge 자동 apply 및 수동 재실행 절차
+- **Reference (참고자료)**:
+  - [프로젝트 구조](#프로젝트-구조) - 도메인별 OpenTofu 파일 구성
+  - [환경 변수](#환경-변수) · [GitHub Secrets](#github-secrets) - R2 Backend 및 Cloudflare Account API Token 설정
+  - [문서 허브](./docs/README.md) - `docs/` 하위 디렉터리 안내
+- **Explanation (구조 이해)**: [아키텍처](#아키텍처) - 로컬 · GitHub Actions · Cloudflare R2/API 연동 구조
 
 ## 아키텍처
 
@@ -29,8 +39,9 @@ graph TB
     subgraph Cloudflare["Cloudflare"]
         r2["R2 Bucket\nterraform-state"]
         api["Cloudflare API"]
-        dns["DNS Records\nzzizily.com"]
-        pr["Page Rules"]
+        dns["DNS Records\nzzizily.com · zetlabs.net"]
+        waf["WAF Rulesets\nCustom · Rate Limit"]
+        redir["Redirect Rules\nzzizily.com → www"]
     end
 
     dev -->|"git push"| repo
@@ -38,7 +49,8 @@ graph TB
     action -->|"tofu apply"| api
     tofu -->|"tofu init"| r2
     api --> dns
-    api --> pr
+    api --> waf
+    api --> redir
 ```
 
 ## CI/CD 파이프라인
@@ -69,28 +81,32 @@ graph LR
 ├── domain/
 │   ├── zzizily/              # zzizily.com
 │   │   ├── main.tf           # Backend + Provider + Variables (통합)
-│   │   ├── page-rule.tf      # Page Rule (zzizily.com → GitHub 301)
-│   │   ├── record-a.tf       # A 레코드 (local)
-│   │   ├── record-cname.tf   # CNAME 레코드 (tech → GitHub Pages)
-│   │   ├── record-google.tf  # Google 서비스 (blog, mail, drive 등)
+│   │   ├── page-rule.tf      # Redirect Rule (zzizily.com → www.zzizily.com 301)
+│   │   ├── record-a.tf       # A 레코드 (local, apex)
+│   │   ├── record-cname.tf   # CNAME 레코드 (tech, ariadm → GitHub Pages)
+│   │   ├── record-existing.tf # 기존 관리 대상 DNS 레코드 (import)
+│   │   ├── record-google.tf  # Google/GitHub Pages 관련 레코드 (blog, www, DKIM 등)
 │   │   ├── record-mail.tf    # MX 레코드 (Google Workspace)
 │   │   ├── record-openai.tf  # OpenAI 도메인 인증 TXT
-│   │   └── record-ssl.tf     # SSL 인증 (ACME challenge)
+│   │   ├── record-ssl.tf     # SSL 인증 (ACME challenge)
+│   │   └── waf.tf            # Free 호환 WAF (Custom Rules + Rate Limiting)
 │   └── zetlabs/              # zetlabs.net
 │       ├── main.tf           # Backend + Provider + Variables
-│       └── record-mail.tf    # MX, SPF, DKIM, DMARC, Google 인증 (Google Workspace)
+│       ├── record-cname.tf   # CNAME 레코드 (@, www → Cloudflare Pages)
+│       ├── record-mail.tf    # MX, SPF, DKIM, DMARC, Google 인증 (Google Workspace)
+│       └── waf.tf            # Free 호환 WAF (Custom Rules + Rate Limiting)
 ├── .env.example              # 환경 변수 템플릿
-└── docs/                     # 설계 문서
+└── docs/                     # 문서 허브 및 내부 설계 문서
 ```
 
 ## 시작하기
 
-DNS 변경은 CI가 apply한다 — 로컬 apply는 금지 (로컬 `.env`의 Cloudflare 토큰은 placeholder).
+인프라 변경(DNS · WAF · Redirect)은 CI가 apply합니다 — 로컬 `tofu apply`는 금지합니다.
 
 ```bash
 # 1. 변경: domain/<도메인>/ 내 .tf 파일 편집
-# 2. 검증 (R2 접근 자격은 .env, plan 이후는 CI Secrets 사용)
-source .env && cd domain/<도메인> && tofu init && tofu fmt -check && tofu validate -no-color
+# 2. 로컬 검증 (.env에 R2 키 및 검증용 API 토큰 설정)
+source .env && cd domain/<도메인> && tofu init && tofu fmt -check && tofu validate -no-color && tofu plan -no-color
 # 3. 브랜치 push → PR 생성 → Actions가 plan을 PR 코멘트에 게시
 # 4. plan 검증 후 merge하면 main push 트리거로 tofu apply 자동 실행
 ```
@@ -101,18 +117,12 @@ source .env && cd domain/<도메인> && tofu init && tofu fmt -check && tofu val
 |------|------|
 | `AWS_ACCESS_KEY_ID` | R2 접근용 Access Key |
 | `AWS_SECRET_ACCESS_KEY` | R2 접근용 Secret Key |
-| `TF_VAR_cloudflare_api_token` | Cloudflare API Token (로컬은 placeholder — 실제 apply는 CI Secrets) |
-| `TF_VAR_cloudflare_zone_id` | Cloudflare Zone ID |
-| `TF_VAR_cloudflare_domain` | 도메인 (zzizily.com) |
+| `TF_VAR_cloudflare_api_token` | Cloudflare Account API Token (로컬 plan 검증용 — 실제 apply는 CI Secrets) |
 
 ## GitHub Secrets
 
 | Secret | 설명 |
 |--------|------|
-| `AWS_ACCESS_KEY_ID` | R2 Backend 접근용 |
-| `AWS_SECRET_ACCESS_KEY` | R2 Backend 접근용 |
-| `CLOUDFLARE_API_TOKEN` | Cloudflare API Token |
-| `CLOUDFLARE_ZONE_ID` | Cloudflare Zone ID (zzizily.com) |
-| `CLOUDFLARE_ZONE_ID_ZETLABS` | Cloudflare Zone ID (zetlabs.net) |
-| `CLOUDFLARE_DOMAIN` | 도메인 |
-| `CLOUDFLARE_ACCOUNT_ID` | Cloudflare Account ID |
+| `AWS_ACCESS_KEY_ID` | R2 Backend 접근용 (R2 Account API Token) |
+| `AWS_SECRET_ACCESS_KEY` | R2 Backend 접근용 (R2 Account API Token) |
+| `CLOUDFLARE_API_TOKEN` | Cloudflare Account API Token (`DNS`, `Zone WAF Rules`, `Dynamic URL Redirects` Edit) |
