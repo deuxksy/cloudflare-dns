@@ -9,9 +9,10 @@
 로컬 `tofu apply`는 금지하며, 변경은 항상 **PR → plan 검증 → main merge**로 적용합니다.
 
 ```bash
-# 1. domain/<zzizily|zetlabs>/ 내 .tf 파일 편집
-# 2. 로컬 검증 (.env 필요)
-source .env && cd domain/<zzizily|zetlabs> && tofu init && tofu fmt -check && tofu validate -no-color && tofu plan -no-color
+# 1. 도구 설치 및 복호화 (최초 1회)
+mise install && mise run decrypt
+# 2. domain/<zzizily|zetlabs>/ 내 .tf 파일 편집 후 로컬 검증
+mise run validate && mise run plan
 # 3. PR 생성 → CI plan 확인 → main merge (자동 apply)
 ```
 
