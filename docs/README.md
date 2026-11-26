@@ -4,7 +4,8 @@
 
 ## 디렉터리 구성
 
-- `superpowers/` — AI 에이전트 작업용 내부 설계서(`specs/`) 및 구현 계획(`plans/`). 일반 개발자용 운영 가이드와 분리하여 관리합니다.
+- [okf/](./okf/README.md) — Diátaxis 4분면 기준 프로젝트 문서 허브 (How-To · Explanation 등)
+- `superpowers/` — AI 에이전트 작업용 내부 설계서(`specs/`) 및 구현 계획(`plans/`)
 
 ## 관련 문서
 
